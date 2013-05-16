@@ -2,19 +2,12 @@ package tdd.vendingMachine.domain;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
-import org.junit.Before;
 import org.junit.Test;
 
-public class ProductStorageTest {
+public abstract class ProductStorageContractTest {
 
-    private ProductStorage storage;
+    protected ProductStorage storage;
     
-    @Before
-    public void setUp() {
-
-        storage = new ProductStorage();
-    }
-
     @Test
     public void shouldBeEmptyJustAfterCreation() throws Exception {
 
@@ -90,6 +83,22 @@ public class ProductStorageTest {
         
         // then:
         assertThat(storage.productOnShelf(1)).isEqualTo(aProduct("Chocolate Bar"));
+    }
+    
+    @Test
+    public void shouldClearStorage() throws Exception {
+
+        // given:
+        storage.loadOnShelf(1, aProduct("Chocolate Bar"));
+        storage.loadOnShelf(1, aProduct("Chocolate Bar"));
+        storage.loadOnShelf(2, aProduct("Mineral Water"));
+        
+        // when:
+        storage.clear();
+        
+        // then:
+        assertThat(storage.productOnShelf(1)).isEqualTo(Product.NO_PRODUCT);
+        assertThat(storage.productOnShelf(2)).isEqualTo(Product.NO_PRODUCT);
     }
     
     // --

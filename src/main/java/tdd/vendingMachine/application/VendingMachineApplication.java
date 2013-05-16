@@ -11,13 +11,14 @@ import tdd.vendingMachine.domain.Product;
 import tdd.vendingMachine.domain.ProductFeeder;
 import tdd.vendingMachine.domain.ProductStorage;
 import tdd.vendingMachine.domain.VendingMachine;
+import tdd.vendingMachine.infrastructure.transients.TransientProductStorage;
 
 @Configuration
 public class VendingMachineApplication {
 
     @Bean
     public ProductStorage productStorage(){
-        return new ProductStorage();
+        return new TransientProductStorage();
     }
 
     @Bean

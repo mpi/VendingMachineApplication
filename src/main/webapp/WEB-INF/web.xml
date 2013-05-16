@@ -15,7 +15,8 @@
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
 		<param-value>
-			classpath:/tdd/vendingMachine/application/application-context.xml
+			classpath:/tdd/vendingMachine/application/application-context.xml,
+			classpath:/tdd/vendingMachine/infrastructure/jdbc/jdbc-context.xml
         </param-value>
 	</context-param>
 
