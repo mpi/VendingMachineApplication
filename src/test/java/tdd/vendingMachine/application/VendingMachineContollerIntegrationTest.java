@@ -34,6 +34,7 @@ public class VendingMachineContollerIntegrationTest extends IntegrationTest{
         // given:
         storage.loadOnShelf(1, new Product("Mineral Water"));
         storage.loadOnShelf(2, new Product("Chocolate Bar"));
+        storage.loadOnShelf(2, new Product("Chocolate Bar"));
         
         // when:
         String response = get("state");
@@ -42,8 +43,8 @@ public class VendingMachineContollerIntegrationTest extends IntegrationTest{
         assertThat(response).contains(
                 json("'storage':{" + 
                         "'shelfs':{" +
-                            "'1':{'name':'Mineral Water'}," +
-                            "'2':{'name':'Chocolate Bar'}" +
+                            "'1':{'product':{'name':'Mineral Water'},'items':1}," +
+                            "'2':{'product':{'name':'Chocolate Bar'},'items':2}" +
                         "}" +
                      "}"
                     ));

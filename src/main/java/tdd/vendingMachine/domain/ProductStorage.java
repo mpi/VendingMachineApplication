@@ -5,24 +5,70 @@ import java.util.Map;
 
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
+import org.codehaus.jackson.annotate.JsonMethod;
 
 @JsonAutoDetect(fieldVisibility=Visibility.ANY)
 public class ProductStorage {
 
-    private Map<Integer, Product> shelfs = new HashMap<Integer, Product>();
+    private Map<Integer, Shelf> shelfs = new HashMap<Integer, Shelf>();
 
     public Product productOnShelf(int shelfNumber) {
     
-        Product productFromShelf = shelfs.get(shelfNumber);
-    
-        return productFromShelf == null ? Product.NO_PRODUCT : productFromShelf;
+        Shelf shelf = shelfs.get(shelfNumber);
+        return shelf == null ? Product.NO_PRODUCT : shelf.product();
     }
 
     public void loadOnShelf(int shelfNumber, Product productToLoad) {
-        shelfs.put(shelfNumber, productToLoad);
+        
+        Shelf shelf = shelfs.get(shelfNumber);
+        if(shelf == null){
+            shelf = new Shelf(productToLoad);
+            shelfs.put(shelfNumber, shelf);
+        }
+        shelf.loadOne();
     }
 
     public void clear() {
         shelfs.clear();
+    }
+
+    public Product takeFromShelf(int shelfNumber) {
+
+        Shelf shelf = shelfs.get(shelfNumber);
+        Product product = shelf.take();
+        
+        if(shelf.isEmpty()){
+            shelfs.remove(shelfNumber);
+        }
+        
+        return product;
+    }
+    
+    @JsonAutoDetect(fieldVisibility=Visibility.ANY, value=JsonMethod.FIELD)
+    private class Shelf{
+        
+        private Product product;
+        private int items = 0;
+        
+        public Shelf(Product product) {
+            this.product = product;
+        }
+        
+        public void loadOne(){
+            items++;
+        }
+        
+        public Product product(){
+            return product;
+        }
+        
+        public Product take(){
+            items--;
+            return product();
+        }
+        
+        public boolean isEmpty(){
+            return items == 0;
+        }
     }
 }

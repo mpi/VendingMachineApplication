@@ -50,6 +50,8 @@ public class VendingMachineController {
             vendingMachine.insert(Coin.valueOf(coin));
             return Response.success();
 
+        } catch (IllegalArgumentException e) {
+            return Response.failure(String.format("Invalid argument: '%s'", coin));
         } catch (Exception e) {
             return Response.failure(e.getMessage());
         }

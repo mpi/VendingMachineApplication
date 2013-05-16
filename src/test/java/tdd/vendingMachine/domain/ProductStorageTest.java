@@ -2,7 +2,6 @@ package tdd.vendingMachine.domain;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -53,6 +52,46 @@ public class ProductStorageTest {
         assertThat(product).isEqualTo(Product.NO_PRODUCT);
     }
 
+    @Test
+    public void shouldTakeProductFromShelf() throws Exception {
+
+        // given:
+        storage.loadOnShelf(1, aProduct("Chocolate Bar"));
+        
+        // when:
+        Product product = storage.takeFromShelf(1);
+        
+        // then:
+        assertThat(product).isEqualTo(aProduct("Chocolate Bar"));
+    }
+    
+    @Test
+    public void shouldRemoveProductFromShelfAfterTake() throws Exception {
+        
+        // given:
+        storage.loadOnShelf(1, aProduct("Chocolate Bar"));
+        
+        // when:
+        storage.takeFromShelf(1);
+        
+        // then:
+        assertThat(storage.productOnShelf(1)).isEqualTo(Product.NO_PRODUCT);
+    }
+    
+    @Test
+    public void shouldLoadMultipleProductsOnShelf() throws Exception {
+        
+        // given:
+        storage.loadOnShelf(1, aProduct("Chocolate Bar"));
+        storage.loadOnShelf(1, aProduct("Chocolate Bar"));
+        
+        // when:
+        storage.takeFromShelf(1);
+        
+        // then:
+        assertThat(storage.productOnShelf(1)).isEqualTo(aProduct("Chocolate Bar"));
+    }
+    
     // --
     
     private Product aProduct(String name) {

@@ -93,7 +93,7 @@ public class VendingMachineControllerTest {
         Response response = controller.insertCoin("INVALID_COIN");
 
         // then:
-        assertThat(response).isEqualTo(Response.failure("No enum const class tdd.vendingMachine.domain.Coin.INVALID_COIN"));
+        assertThat(response).isEqualTo(Response.failure("Invalid argument: 'INVALID_COIN'"));
     }
 
     // --
