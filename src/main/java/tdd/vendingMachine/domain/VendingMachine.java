@@ -1,38 +1,25 @@
 package tdd.vendingMachine.domain;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import tdd.vendingMachine.domain.CoinDispenser.ChangeCannotBeReturnedException;
 
 public class VendingMachine {
 
+    private final ProductStorage storage;
     private final CoinDispenser coinDispenser;
-    private final PriceList priceList;
     private final ProductFeeder productFeeder;
-
-    private Map<Integer, Product> shelfs = new HashMap<Integer, Product>();
+    private final PriceList priceList;
 
     private List<Coin> inserted = new ArrayList<Coin>();
     private Product selectedProduct = Product.NO_PRODUCT;
 
-    public VendingMachine(CoinDispenser coinDispenser, ProductFeeder productFeeder, PriceList priceList) {
+    public VendingMachine(ProductStorage storage, CoinDispenser coinDispenser, ProductFeeder productFeeder, PriceList priceList) {
+        this.storage = storage;
         this.coinDispenser = coinDispenser;
         this.productFeeder = productFeeder;
         this.priceList = priceList;
-    }
-
-    public Product productOnShelf(int shelfNumber) {
-
-        Product productFromShelf = shelfs.get(shelfNumber);
-
-        return productFromShelf == null ? Product.NO_PRODUCT : productFromShelf;
-    }
-
-    public void loadOnShelf(int shelfNumber, Product productToLoad) {
-        shelfs.put(shelfNumber, productToLoad);
     }
 
     public String getDisplay() {
@@ -63,7 +50,7 @@ public class VendingMachine {
 
     public void select(int shelfNumber) {
 
-        selectedProduct = productOnShelf(shelfNumber);
+        selectedProduct = storage.productOnShelf(shelfNumber);
     }
 
     public void insert(Coin money) {
@@ -86,7 +73,15 @@ public class VendingMachine {
                 coinDispenser.giveBack(insertedAmmount());
             }
             
+            inserted.clear();
             selectedProduct = Product.NO_PRODUCT;
         }
+    }
+
+    public void cancel() {
+        coinDispenser.accept(inserted.toArray(new Coin[0]));
+        coinDispenser.giveBack(insertedAmmount());
+        inserted.clear();
+        selectedProduct = Product.NO_PRODUCT;
     }
 }
