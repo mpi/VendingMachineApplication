@@ -45,4 +45,20 @@ public class EmbeddedServer {
             throw new RuntimeException(e);
         }
     }
+    
+    public static void main(String[] args) {
+        
+        EmbeddedServer server = new EmbeddedServer(Integer.valueOf(envOr("PORT", "8080")));
+        
+        server.start();
+        server.awaitShutdown();
+    }
+    
+    private static String envOr(String port, String defaultValue) {
+        String variable = System.getenv(port);
+        if (variable == null) {
+            return defaultValue;
+        }
+        return variable;
+    }
 }

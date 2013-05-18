@@ -25,4 +25,5 @@
 
 	<context:component-scan base-package="tdd.vendingMachine.application" />
 
+ 	<mvc:resources mapping="/views/**" location="/WEB-INF/views/" />
 </beans>

@@ -18,7 +18,28 @@ public class VendingMachineApplication {
 
     @Bean
     public ProductStorage productStorage(){
-        return new TransientProductStorage();
+        
+        ProductStorage storage = new TransientProductStorage();
+
+        storage.loadOnShelf(1, new Product("Woda mineralna"));
+        storage.loadOnShelf(1, new Product("Woda mineralna"));
+        storage.loadOnShelf(1, new Product("Woda mineralna"));
+        storage.loadOnShelf(2, new Product("Woda mineralna"));
+        storage.loadOnShelf(2, new Product("Woda mineralna"));
+        storage.loadOnShelf(3, new Product("Baton czekoladowy"));
+        storage.loadOnShelf(3, new Product("Baton czekoladowy"));
+        storage.loadOnShelf(4, new Product("Baton kokosowy"));
+        storage.loadOnShelf(5, new Product("Sok jabłkowy"));
+        storage.loadOnShelf(5, new Product("Sok jabłkowy"));
+        storage.loadOnShelf(5, new Product("Sok jabłkowy"));
+        storage.loadOnShelf(6, new Product("Sok pomarańczowy"));
+        storage.loadOnShelf(6, new Product("Sok pomarańczowy"));
+        storage.loadOnShelf(6, new Product("Sok pomarańczowy"));
+        storage.loadOnShelf(6, new Product("Sok pomarańczowy"));
+        storage.loadOnShelf(7, new Product("Napój cola"));
+        storage.loadOnShelf(7, new Product("Napój cola"));
+        
+        return storage;
     }
 
     @Bean

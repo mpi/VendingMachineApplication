@@ -19,6 +19,11 @@ public class VendingMachineController {
     private final VendingMachine vendingMachine;
     private final ProductStorage productStorage;
     
+    @RequestMapping("/vending-machine")
+    public String page(){
+        return "vending-machine";
+    }
+    
     @Autowired
     public VendingMachineController(VendingMachine vendingMachine, ProductStorage productStorage) {
         this.vendingMachine = vendingMachine;
