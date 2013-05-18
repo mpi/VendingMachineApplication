@@ -10,7 +10,6 @@ import org.codehaus.jackson.annotate.JsonMethod;
 import tdd.vendingMachine.domain.Product;
 import tdd.vendingMachine.domain.ProductStorage;
 
-@JsonAutoDetect(fieldVisibility=Visibility.ANY)
 public class TransientProductStorage implements ProductStorage {
 
     private Map<Integer, Shelf> shelfs = new HashMap<Integer, Shelf>();
@@ -76,5 +75,10 @@ public class TransientProductStorage implements ProductStorage {
         public boolean isEmpty(){
             return items == 0;
         }
+    }
+
+    @Override
+    public int itemsOnShelf(int shelfNumber) {
+        return shelfs.get(shelfNumber).items;
     }
 }

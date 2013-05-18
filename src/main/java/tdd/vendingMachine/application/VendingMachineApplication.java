@@ -3,6 +3,8 @@ package tdd.vendingMachine.application;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import tdd.vendingMachine.domain.CoinDispenser;
 import tdd.vendingMachine.domain.Price;
@@ -11,15 +13,16 @@ import tdd.vendingMachine.domain.Product;
 import tdd.vendingMachine.domain.ProductFeeder;
 import tdd.vendingMachine.domain.ProductStorage;
 import tdd.vendingMachine.domain.VendingMachine;
-import tdd.vendingMachine.infrastructure.transients.TransientProductStorage;
+import tdd.vendingMachine.infrastructure.jdbc.JdbcProductStorage;
 
 @Configuration
 public class VendingMachineApplication {
 
     @Bean
-    public ProductStorage productStorage(){
+    @Autowired
+    public ProductStorage productStorage(JdbcTemplate template){
         
-        ProductStorage storage = new TransientProductStorage();
+        ProductStorage storage = new JdbcProductStorage(template);
 
         storage.loadOnShelf(1, new Product("Woda mineralna"));
         storage.loadOnShelf(1, new Product("Woda mineralna"));

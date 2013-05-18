@@ -13,10 +13,10 @@ import tdd.vendingMachine.domain.VendingMachine;
 public class VendingMachineContollerIntegrationTest extends IntegrationTest{
 
     @Autowired
-    private ProductStorage storage;
-
-    @Autowired
     private VendingMachine vendingMachine;
+    
+    @Autowired
+    private ProductStorage storage;
     
     public VendingMachineContollerIntegrationTest() {
         super("http://localhost:9900/vending-machine/");

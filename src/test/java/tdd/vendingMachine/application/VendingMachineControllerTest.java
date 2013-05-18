@@ -11,8 +11,13 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import tdd.vendingMachine.application.VendingMachineController.StorageDTO;
+import tdd.vendingMachine.application.VendingMachineController.VendingMachineDTO;
 import tdd.vendingMachine.domain.Coin;
+import tdd.vendingMachine.domain.Product;
+import tdd.vendingMachine.domain.ProductStorage;
 import tdd.vendingMachine.domain.VendingMachine;
+import tdd.vendingMachine.infrastructure.transients.TransientProductStorage;
 
 @RunWith(MockitoJUnitRunner.class)
 public class VendingMachineControllerTest {
@@ -95,7 +100,28 @@ public class VendingMachineControllerTest {
         // then:
         assertThat(response).isEqualTo(Response.failure("Invalid argument: 'INVALID_COIN'"));
     }
+    
+    @Test
+    public void shouldReturnStateOfStorage() throws Exception {
 
+        // given:
+        ProductStorage storage = new TransientProductStorage();
+        storage.loadOnShelf(1, new Product("Product A"));
+        storage.loadOnShelf(2, new Product("Product B"));
+        storage.loadOnShelf(2, new Product("Product B"));
+        
+        controller = new VendingMachineController(vendingMachine, storage);
+        
+        // when:
+        VendingMachineDTO state = controller.state();
+        
+        // then:
+        StorageDTO storageDTO = new StorageDTO();
+        storageDTO.addShelf(1, new Product("Product A"), 1);
+        storageDTO.addShelf(2, new Product("Product B"), 2);
+        assertThat(state).isEqualsToByComparingFields(new VendingMachineDTO("", storageDTO));
+    }
+    
     // --
 
     private void selectFailsWithMessage(String message) {

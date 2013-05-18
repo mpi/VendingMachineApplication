@@ -66,5 +66,12 @@ public class JdbcProductStorage implements ProductStorage{
     public void clear() {
         template.execute("delete from PRODUCT_SHELF");
     }
+
+    @Override
+    public int itemsOnShelf(int shelfNumber) {
+        
+        String sql = String.format("select sum(ITEMS) from PRODUCT_SHELF where SHELF_NUMBER='%s'", shelfNumber);
+        return template.queryForInt(sql);
+    }
     
 }

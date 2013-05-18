@@ -79,10 +79,10 @@ public abstract class ProductStorageContractTest {
         storage.loadOnShelf(1, aProduct("Chocolate Bar"));
         
         // when:
-        storage.takeFromShelf(1);
+        Integer items = storage.itemsOnShelf(1);
         
         // then:
-        assertThat(storage.productOnShelf(1)).isEqualTo(aProduct("Chocolate Bar"));
+        assertThat(items).isEqualTo(2);
     }
     
     @Test

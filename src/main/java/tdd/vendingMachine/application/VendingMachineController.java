@@ -1,5 +1,8 @@
 package tdd.vendingMachine.application;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,12 +13,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import tdd.vendingMachine.domain.Coin;
+import tdd.vendingMachine.domain.Product;
 import tdd.vendingMachine.domain.ProductStorage;
 import tdd.vendingMachine.domain.VendingMachine;
 
 @Controller
 public class VendingMachineController {
 
+    private static final int MAX_SHELF_NUMBER = 9;
+    
     private final VendingMachine vendingMachine;
     private final ProductStorage productStorage;
     
@@ -70,21 +76,56 @@ public class VendingMachineController {
     @RequestMapping(   value = "/vending-machine/state",
                       method = RequestMethod.GET,
                     produces = "application/json")
-    public @ResponseBody VendingMachineMemento state(){
-        return new VendingMachineMemento(vendingMachine.getDisplay(), productStorage);
+    public @ResponseBody VendingMachineDTO state(){
+        return new VendingMachineDTO(vendingMachine.getDisplay(), buildDTO(productStorage));
     }
     
+    private StorageDTO buildDTO(ProductStorage productStorage) {
+        
+        StorageDTO storage = new StorageDTO();
+        
+        for(int shelfNumber = 1; shelfNumber <= MAX_SHELF_NUMBER; shelfNumber++){
+            Product product = productStorage.productOnShelf(shelfNumber);
+            if(product != Product.NO_PRODUCT)
+                storage.addShelf(shelfNumber, product, productStorage.itemsOnShelf(shelfNumber));
+        }
+        
+        return storage;
+    }
+
     @JsonAutoDetect(fieldVisibility=Visibility.ANY)
-    public class VendingMachineMemento {
+    public static class VendingMachineDTO {
         
         String display;
-        ProductStorage storage;
+        StorageDTO storage;
         
-        public VendingMachineMemento(String display, ProductStorage storage) {
+        VendingMachineDTO(String display, StorageDTO storage) {
             this.storage = storage;
             this.display = display;
         }
-        
     }
+    
+    @JsonAutoDetect(fieldVisibility=Visibility.ANY)
+    public static class StorageDTO {
+
+        Map<Integer, ShelfDTO> shelfs = new HashMap<Integer, ShelfDTO>();
+     
+        void addShelf(Integer shelfNumber, Product product, Integer items){
+            shelfs.put(shelfNumber, new ShelfDTO(product, items));
+        }
+    }
+    
+    @JsonAutoDetect(fieldVisibility=Visibility.ANY)
+    public static class ShelfDTO {
+        
+        Product product;
+        Integer items;
+        
+        ShelfDTO(Product product, Integer items) {
+            this.product = product;
+            this.items = items;
+        }
+    }
+    
 }
 
