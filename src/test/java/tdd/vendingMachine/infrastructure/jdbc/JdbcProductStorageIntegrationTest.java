@@ -3,7 +3,6 @@ package tdd.vendingMachine.infrastructure.jdbc;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +14,6 @@ import tdd.vendingMachine.domain.ProductStorageContractTest;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("jdbc-context.xml")
-@Ignore
 public class JdbcProductStorageIntegrationTest extends ProductStorageContractTest{
 
     @Autowired
