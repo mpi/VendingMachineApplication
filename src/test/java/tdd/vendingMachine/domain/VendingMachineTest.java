@@ -32,6 +32,7 @@ public class VendingMachineTest {
     public void setUp() {
 
         priceOf(Mockito.any(Product.class)).is(Price.of("1,00"));
+        when(storage.productOnShelf(Mockito.anyInt())).thenReturn(Product.NO_PRODUCT);
         vendingMachine = new VendingMachine(storage, coinDispenser, productFeeder, priceList);
     }
 
@@ -148,6 +149,21 @@ public class VendingMachineTest {
     }
     
     @Test
+    public void shouldDisplayMessageIfChangeCannotBeReturned() throws Exception {
+        
+        // given:
+        selectProductThatCost("1,50");
+        changeCannotBeReturned("0,50");
+        
+        // when:
+        vendingMachine.insert(Coin.ONE_DOLLAR);
+        vendingMachine.insert(Coin.ONE_DOLLAR);
+        
+        // then:
+        assertThat(vendingMachine.getDisplay()).isEqualTo("No change!");
+    }
+    
+    @Test
     public void shouldGiveProductAfterPurchase() throws Exception {
         
         // given:
@@ -159,7 +175,24 @@ public class VendingMachineTest {
         // then:
         verify(productFeeder).release(product);
     }
+    
+    @Test
+    public void shouldTakeProductFromStorageAfterPurchase() throws Exception {
+        
+        // given:
+        Product product = aProduct("Apple Juice");
+        priceOf(product).is(Price.of("1,00"));
+        storageContainProduct(1, product);
+        
+        // when:
+        vendingMachine.select(1);
+        vendingMachine.insert(Coin.ONE_DOLLAR);
+        
+        // then:
+        verify(storage).takeFromShelf(1);
+    }
 
+    
     @Test
     public void shouldClearInsertedCoinsAfterPurchase() throws Exception {
         

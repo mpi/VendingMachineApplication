@@ -13,7 +13,8 @@ public class VendingMachine {
     private final PriceList priceList;
 
     private List<Coin> inserted = new ArrayList<Coin>();
-    private Product selectedProduct = Product.NO_PRODUCT;
+    private int selectedShelf;
+    private String display = "";
 
     public VendingMachine(ProductStorage storage, CoinDispenser coinDispenser, ProductFeeder productFeeder, PriceList priceList) {
         this.storage = storage;
@@ -24,16 +25,21 @@ public class VendingMachine {
 
     public String getDisplay() {
 
-        if (selectedProduct == Product.NO_PRODUCT) {
-            return "";
-        }
+        return display;
+    }
 
-        return String.format("%s: %s PLN", selectedProduct.toString(), remainingAmmount());
+    private void updateDisplayedPrice() {
+    
+        if (selectedProduct() == Product.NO_PRODUCT) {
+            updateDisplay("");
+            return;
+        }
+        updateDisplay(String.format("%s: %s PLN", selectedProduct().toString(), remainingAmmount()));
     }
 
     private Price remainingAmmount() {
 
-        Price remainingPrice = priceList.priceOf(selectedProduct);
+        Price remainingPrice = priceList.priceOf(selectedProduct());
         return remainingPrice.minus(insertedAmmount());
     }
 
@@ -50,38 +56,63 @@ public class VendingMachine {
 
     public void select(int shelfNumber) {
 
-        selectedProduct = storage.productOnShelf(shelfNumber);
+        selectedShelf = shelfNumber;
+        updateDisplayedPrice();
     }
 
     public void insert(Coin money) {
 
         inserted.add(money);
-
-        long remainingCents = remainingAmmount().asCents();
-        if (remainingCents <= 0) {
-            
-            coinDispenser.accept(inserted.toArray(new Coin[0]));
-
-            try {
-
-                if (remainingCents < 0) {
-                    coinDispenser.giveBack(Price.fromCents(-remainingCents));
-                }
-                productFeeder.release(selectedProduct);
-                
-            } catch (ChangeCannotBeReturnedException e) {
-                coinDispenser.giveBack(insertedAmmount());
-            }
-            
-            inserted.clear();
-            selectedProduct = Product.NO_PRODUCT;
+        
+        if (fullyPaid()) {
+            giveProductAndReturnChange();
+        } else{
+            updateDisplayedPrice();
         }
+    }
+
+    private void giveProductAndReturnChange() {
+
+        try {
+        
+            coinDispenser.accept(inserted.toArray(new Coin[0]));
+            if (remainingAmmount().asCents() < 0) {
+                coinDispenser.giveBack(Price.fromCents(-remainingAmmount().asCents()));
+            }
+            storage.takeFromShelf(selectedShelf);
+            productFeeder.release(selectedProduct());
+            clearSelection();
+            updateDisplayedPrice();
+            
+        } catch (ChangeCannotBeReturnedException e) {
+            coinDispenser.giveBack(insertedAmmount());
+            updateDisplay("No change!");
+        }
+        inserted.clear();
+    }
+
+    private boolean fullyPaid() {
+        return remainingAmmount().asCents() <= 0;
+    }
+
+
+    private void clearSelection() {
+        selectedShelf = -1;
+    }
+
+    private void updateDisplay(String display) {
+        this.display = display;
+    }
+
+    private Product selectedProduct() {
+        return storage.productOnShelf(selectedShelf);
     }
 
     public void cancel() {
         coinDispenser.accept(inserted.toArray(new Coin[0]));
         coinDispenser.giveBack(insertedAmmount());
         inserted.clear();
-        selectedProduct = Product.NO_PRODUCT;
+        clearSelection();
+        updateDisplayedPrice();
     }
 }

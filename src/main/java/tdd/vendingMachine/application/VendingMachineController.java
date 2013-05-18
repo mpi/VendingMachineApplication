@@ -19,6 +19,11 @@ public class VendingMachineController {
     private final VendingMachine vendingMachine;
     private final ProductStorage productStorage;
     
+    @RequestMapping("/")
+    public String index(){
+        return "redirect:vending-machine";
+    }
+    
     @RequestMapping("/vending-machine")
     public String page(){
         return "vending-machine";
